@@ -15,11 +15,22 @@ public class Cuenta {
   private String persona;
   private BigDecimal saldo;
 
-  public void debito(BigDecimal movimiento) {
+  public void transferirSaldo(BigDecimal movimiento) {
+    validarSaldoException(movimiento);
+    saldo = saldo.subtract(movimiento);
+  }
 
-    if (saldo.compareTo(movimiento) < 0) {
+  public void recepcionarlSaldo(BigDecimal movimiento) {
+    saldo = saldo.add(movimiento);
+  }
+
+  public Boolean validarSaldo(BigDecimal movimiento) {
+    return saldo.compareTo(movimiento) < 0;
+  }
+
+  public void validarSaldoException(BigDecimal movimiento) {
+    if (validarSaldo(movimiento)) {
       throw new SaldoInsuficienteExpception("Saldo insuficiente");
     }
-    saldo = saldo.subtract(movimiento);
   }
 }

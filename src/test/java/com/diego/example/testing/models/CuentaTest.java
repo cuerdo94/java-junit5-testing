@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.diego.example.testing.exceptions.SaldoInsuficienteExpception;
 import com.github.javafaker.Faker;
@@ -51,7 +52,7 @@ class CuentaTest {
     BigDecimal saldo = new BigDecimal("80000");
     Cuenta cuenta = new Cuenta(name, saldo);
     BigDecimal movimiento = new BigDecimal("200");
-    cuenta.debito(movimiento);
+    cuenta.transferirSaldo(movimiento);
     assertEquals(saldo.subtract(movimiento), cuenta.getSaldo());
 
   }
@@ -64,10 +65,29 @@ class CuentaTest {
 
     Exception exception = assertThrows(SaldoInsuficienteExpception.class, () -> {
       BigDecimal movimiento = new BigDecimal("90000");
-      cuenta.debito(movimiento);
+      cuenta.transferirSaldo(movimiento);
     });
 
     assertEquals(exception.getMessage(), "Saldo insuficiente");
+
+  }
+
+  @Test
+  public void testTransferenciaEntreCuenta() {
+    String name = faker.name().fullName();
+    BigDecimal saldo = new BigDecimal("80000");
+    Cuenta cuenta = new Cuenta(name, saldo);
+
+    String name2 = faker.name().fullName();
+    BigDecimal saldo2 = new BigDecimal("180000");
+    Cuenta cuenta2 = new Cuenta(name2, saldo2);
+
+    Banco banco = new Banco("Santander", List.of(cuenta, cuenta2));
+
+    banco.transferirSaldo(cuenta, cuenta2, new BigDecimal("70000"));
+
+    assertEquals(new BigDecimal("10000"), cuenta.getSaldo());
+    assertEquals(new BigDecimal("250000"), cuenta2.getSaldo());
 
   }
 }
